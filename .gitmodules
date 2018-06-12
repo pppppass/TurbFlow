@@ -1,0 +1,3 @@
+[submodule "textmpls"]
+	path = textmpls
+	url = git@github.com:pppppass/textmpls
