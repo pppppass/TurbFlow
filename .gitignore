@@ -12,6 +12,7 @@
 Temporary/
 __pycache__/
 .ipynb_checkpoints/
+__*
 
 # Binary files
 *.pdf

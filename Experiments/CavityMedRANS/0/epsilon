@@ -1,0 +1,30 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    location    "0";
+    object      epsilon;
+}
+
+dimensions      [0 2 -3 0 0 0 0];
+
+internalField   uniform 0.00189;
+
+boundaryField
+{
+    movingWall
+    {
+        type            epsilonWallFunction;
+        value           uniform 0.00189;
+    }
+    fixedWalls
+    {
+        type            epsilonWallFunction;
+        value           uniform 0.00189;
+    }
+    frontAndBack
+    {
+        type            empty;
+    }
+}
