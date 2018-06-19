@@ -707,7 +707,7 @@ This is figures of magnitude of flow velocity $\mathbf{U}$. First row: DNS; seco
 
 In this figure, the distinction between these three models are again magnified. The comparison the first two rows shows that the vortex street of large eddy simulation is more regular and continuous, while that of direct numerical simulation introduces some artifacts here. To be exact, the vortex street in direct numerical simulation gets broken up and the size of vortexes varies a lot. This is because the size of grids does not reach the Reynolds number, as mentioned before, and therefore direct numerical simulation cannot capture such details. For large eddy simulation, part of the vortexes are modeled and therefore accuracy and regularity can be preserved. Note that Reynolds-averaged simulation fails here, because the profile itself does not own statistical steadiness: it has periodical movement after all.
 
-These results are carried out on a computer with Intel Core i7-6500U (4 threads) and $\SI{7886}{\mebi\byte}$ RAM. The operating system is Arch Linux 4.16.13 64-bit. We deploy OpenFOAM \parencite{weller_tensorial_1998} for numerical simulation. Detailed settings include initial values, boundary conditions and numerical schemes are provided in \url{https://github.com/pppppass/TurbulentFlow/Experiments}.
+These results are carried out on a computer with Intel Core i7-6500U (4 threads) and $\SI{7886}{\mebi\byte}$ RAM. The operating system is Arch Linux 4.16.13 64-bit. We deploy OpenFOAM 5.0 \parencite{weller_tensorial_1998} for numerical simulation. Detailed settings include initial values, boundary conditions and numerical schemes are provided in \url{https://github.com/pppppass/TurbulentFlow/Experiments}.
 
 \section{Conclusion} \label{Sec:Con}
 
