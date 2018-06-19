@@ -9,11 +9,13 @@
 
 \usepackage[paper, extables, si]{def}
 
+\linespread{1.20}\selectfont
+
 \addbibresource{Bibliography.bib}
 
 \newcommand{\cuniversity}{Peking University}
 \newcommand{\cthesisname}{\emph{Mathematical Models} Project Report}
-\newcommand{\titlemark}{Mathematical Models in Computational Turbulent Flows}
+\newcommand{\titlemark}{Models in Computational Turbulent Flows}
 
 \DeclareRobustCommand{\authoring}%
 {%
@@ -31,7 +33,7 @@ Zeyu Jia\thanks{Equal contribution.} & Zhihan Li\thanksmark{1} \\%
 \maketitle
 
 \begin{abstract}
-Fluid, highly versatile, have both global structures and time-varying details. This results in difficulties for computation and modeling. In spite of such challenges, \emph{computational fluid dynamics} (CFD) has attracted attention since 20\textsuperscript{th} century, and lots of methodologies have been developed due to the huge number of applications of fluids in engineering. Among different kinds of computational fluid dynamics tasks, \emph{turbulent flows} are of high importance because of its universality and complexity. In order to achieve computational possibility, lots of simplified turbulent models have been proposed. In this report, we investigate and summarize three main types of turbulent models: \emph{direct numerical simulation} (DNS) models, \emph{large eddy simulation} (LES) models and \emph{Reynolds-averaged simulation} (RAS) models. We provide detailed analysis and numerical experiments for comparison. We show that these three kinds of models enjoy different precision and efficiency, and therefore fit in different cases.
+Fluid, highly versatile, have both global structures and time-varying details. This results in difficulties for computation and modeling. In spite of such challenges, \emph{computational fluid dynamics} (CFD) has attracted attention since 20\textsuperscript{th} century, and lots of methodologies have been developed due to the huge number of applications of fluids in engineering. Among different kinds of computational fluid dynamics tasks, \emph{turbulent flows} are of high importance because of its universality and complexity. In order to achieve computational possibility, lots of simplified turbulent models have been proposed. In this report, we investigate and summarize three main types of turbulent models: \emph{direct numerical simulation} (DNS) models, \emph{large eddy simulation} (LES) models and \emph{Reynolds-averaged simulation} (RAS) models. We provide detailed analysis and numerical experiments for comparison. We show that these three kinds of models enjoy different precision and efficiency, and therefore fit in different cases. The project is held on \url{https://github.com/pppppass/TurbulentFlow}, with the report \url{https://github.com/pppppass/TurbulentFlow/Report/Report.pdf} in digital version.
 \end{abstract}
 
 \section{Introduction} \label{Sec:Intro}
@@ -44,7 +46,7 @@ Because of the freedom of deformation, fluids may have relatively stable global 
 
 \emph{Turbulent flow}, or say turbulence, is a kind of flow phenomena, on the contrary to laminar flow. For laminar flows, the flow can be divided into parallel layers, and the flow velocity remains relatively stable. However, in turbulent flow cases, the flow is highly unsteady and the flow velocity changes rapidly. It is said that turbulent flow boost the process of mixing by breaking volumes of different properties into small pieces and enlarging the interaction surface. In this sense, \emph{turbulent diffusion} can be considered \parencite{ferziger_computational_2002}. A prominent property for turbulent flows is chaos: tiny changes of the initial condition may result in completely different patterns. Another property is the change in vorticity, which always lead to different sizes of vortexes and even vortex streets \parencite{ferziger_computational_2002}.
 
-Because of the chaotic behavior, it is rather complicated to derive properties of general turbulent flows directly from governing equations. Therefore, simplified and statistical models have also been investigated, especially from the communities of physics and probability theory. One of the most famous models is the \emph{energy cascade model} for local isotropic turbulent flows by Richarson \parencite{taylor_diffusion_nodate}, which emphasizes the similarity between turbulent flows of different scales. In this model, turbulent flows of large scales contain much energy, and they gets broken up and reach relatively equilibrium, and finally enter the dissipation range of scales. Kolmogorov further established concrete hypothesis for these models, and proposed the famous $ -5 / 3 $ spectra, which claims the existence of curve segment of slope $ -5 / 3 $ in normalized energy spectra \parencite{kolmogorov_equations_1941}. This phenomena is checked by many experiments, and universality has been verified \parencite{sreenivasan_universality_1995}.
+Because of the chaotic behavior, it is rather complicated to derive properties of general turbulent flows directly from governing equations. Therefore, simplified and statistical models have also been investigated, especially from the communities of physics and probability theory. One of the most famous models is the \emph{energy cascade model} for local isotropic turbulent flows by Richardson \parencite{taylor_diffusion_nodate}, which emphasizes the similarity between turbulent flows of different scales. In this model, turbulent flows of large scales contain much energy, and they gets broken up and reach relatively equilibrium, and finally enter the dissipation range of scales. Kolmogorov further established concrete hypothesis for these models, and proposed the famous $ -5 / 3 $ spectra, which claims the existence of curve segment of slope $ -5 / 3 $ in normalized energy spectra \parencite{kolmogorov_equations_1941}. This phenomena is checked by many experiments, and universality has been verified \parencite{sreenivasan_universality_1995}.
 
 On the computational side, there are also simplifications on models designed specially for numerical simulation. There are mainly three categories for corresponding models and algorithms:
 \begin{partlist}
@@ -54,7 +56,7 @@ On the computational side, there are also simplifications on models designed spe
 \end{partlist}
 Each model have pros and cons of itself, and this will be analyzed in later sections.
 
-The plan of this report is as follows. We will introduce basic concepts and equations of fluid dynamics in Section \ref{Sec:Intro} and \ref{Sec:Eq}. Different models, say DNS, LES and RAS will be detailedly discussed in Section \ref{Sec:DNS}, \ref{Sec:LES} and \ref{Sec:RAS} respectively. We will conduct a full comparison of these three models in \ref{Sec:Comp}, with analisys and experiments provided. Conclusion will be given in Section \ref{Sec:Con}, with acknowledgement Section \ref{Sec:Ack}.
+The plan of this report is as follows. We will introduce basic concepts and equations of fluid dynamics in Section \ref{Sec:Intro} and \ref{Sec:Eq}. Different models, say DNS, LES and RAS will be detailedly discussed in Section \ref{Sec:DNS}, \ref{Sec:LES} and \ref{Sec:RAS} respectively. We will conduct a full comparison of these three models in \ref{Sec:Comp}, with analysis and experiments provided. Conclusion will be given in Section \ref{Sec:Con}, with acknowledgement Section \ref{Sec:Ack}.
 
 The main contents of models are summarized from \parencite{pope_turbulent_2001} \parencite{zhaoshun_zhang_theory_2005}. Some analysis are made originally.
 
@@ -70,7 +72,7 @@ We proceed consider the Lagrangian coordinate first. For a given point $\mathbf{
 \begin{equation}
 \frac{\pd}{ \pd t } \mathbf{X} \rbr{ t, \mathbf{x} } = \mathbf{U} \rbr{ t, \mathbf{X} \rbr{ t, \mathbf{x} } }.
 \end{equation}
-Here $\mathbf{X}$ is considered to be \emph{Lagrangian coordinate}, in accordance to \emph{Eulerian coordiante} $\mathbf{x}$. Lagrange coordinate provides use a map
+Here $\mathbf{X}$ is considered to be \emph{Lagrangian coordinate}, in accordance to \emph{Eulerian coordinate} $\mathbf{x}$. Lagrange coordinate provides use a map
 \begin{equation}
 \Phi^t \rbr{\mathbf{x}} = \mathbf{X} \rbr{ t, \mathbf{x} },
 \end{equation}
@@ -190,7 +192,7 @@ The direct numerical simulation (DNS) method is one of the most simplest methods
 
 \subsection{Descretization}
 
-There are mainly three descretization techniques toward PDEs, say the finite difference method (FD, FDM), the finite volume method (FVM) and the finite element method (FEM).
+There are mainly three descretization techniques toward partial differential equations, say the finite difference method (FD, FDM), the finite volume method (FVM) and the finite element method (FEM).
 
 To apply finite difference method, what we need do first is to discretize the geometric domain into numerical grids. Simple grid parallel to coordinate axes usually applies, but curved grids may also be used for complex geometries. After discretizing the geometric domain, we can utilize difference on the grid to represent the derivatives. An example on the real line is
 \begin{equation}
@@ -198,7 +200,7 @@ To apply finite difference method, what we need do first is to discretize the ge
 \end{equation}
 where $x_{i+1}$ and $x_i$ are two grid points, and $u$ is the unknown to be solved. In this way, we can transform the PDE into a difference equation, and then approximate the solution to the PDE by solving the difference equation. Since the finite difference functions space on a bounded set is often of finite dimension, the finite difference equation can be solved by solve an equation of finite variables. This is the finite difference method.
 
-Finite vlume method is another category of numerical methods to solve PDEs. Similar to the finite difference method, in the finite volume method, the domain is firstly been divided into several control volumes, and what we are going to define is the function value on the boundary or the center of each control volumes.
+Finite volume method is another category of numerical methods to solve partial differential equations. Similar to the finite difference method, in the finite volume method, the domain is firstly been divided into several control volumes, and what we are going to define is the function value on the boundary or the center of each control volumes.
 
 With integral conservation laws, we can find the integral equations for each control volumes. If we sum up the integral equations respect to all the control volumes, we can obtain a global conservation. Therefore, the main problem in the finite volume method, is to approximate surface integrals and volume integrals of each control volumes. Numerical quadratures and approximations are used here, such as the Simpson formula.
 
@@ -210,13 +212,13 @@ With integral conservation laws, we can find the integral equations for each con
 % \par As for the volume integral, the most common way to use is to replace the integral with the mean value of its integrand times the volume of the control volume. If more orders of accuracy is required, then we may choose some more accurate approximation to the integral. More details will not be introduced here.
 
 % \subsubsection{Finite Element Method}
-Finite element method is a little bit different to the previous two methods. The main idea of the finite element method is the Galekin method. That is, instead of solving the PDE directly, we write its variational form, and then try to find its weak solution. The domain is also divided into some regions, and the discretized object function space $U_h$ and test function space $V_h$ are piecewise linear functions. Then what we need to do is to find a approximation solution $u_h$ in $U_h$ satisfies
+Finite element method is a little bit different to the previous two methods. The main idea of the finite element method is the Galerkin method. That is, instead of solving the PDE directly, we write its variational form, and then try to find its weak solution. The domain is also divided into some regions, and the discretized object function space $U_h$ and test function space $V_h$ are piece-wise linear functions. Then what we need to do is to find a approximation solution $u_h$ in $U_h$ satisfies
 \begin{equation}
 \mathcal{L}(u_h, v_h) = 0
 \end{equation}
 for all $ v_h \in V_h $, which is the discretized variational problem. Noticing that this problem is equations of finite variables, we can solve it by solving equations.
 
-Every time we descritize quantities, errors get involved. Hence, to choose a scheme which owns high-order accuracy and can be solved efficiently is our goal.
+Every time we discretize quantities, errors get involved. Hence, to choose a scheme which owns high-order accuracy and can be solved efficiently is our goal.
 
 \subsection{Schemes}\label{SSec:Schemes}
 
@@ -234,7 +236,7 @@ Schemes needs to carefully designed to numerically solve incompressible Naiver--
 \end{equation}
 This scheme can be considered as backward Euler scheme regardless of the convection term. In this scheme, as for space discretization, we can just choose central space schemes.
 
-% and I do not write it in the formula for simplicity. Noticing that the scheme all the terms in this formula are implicit except for the non-linearity term. Hence if we discretize the PDE in this way, we will obtain a system of linear equation. As for the techniques to solve the equation, we are going to show them in subection 2.5.
+% and I do not write it in the formula for simplicity. Noticing that the scheme all the terms in this formula are implicit except for the non-linearity term. Hence if we discretize the PDE in this way, we will obtain a system of linear equation. As for the techniques to solve the equation, we are going to show them in subsection 2.5.
 
 % \subsubsection{Crank-Nicholson Scheme}
 
@@ -249,13 +251,13 @@ Note that viscosity term is modified. Comparing to the previous scheme, the Cran
 \begin{equation}
 \rbr{\mathbf{U}^{n+1/2}\cdot\nabla}\mathbf{U}^{n+1/2} = \rbr{\mathbf{U}^{n+1}\cdot\nabla}\mathbf{U}^n +\rbr{\mathbf{U}^n\cdot\nabla}\mathbf{U}^{n+1} - \rbr{\mathbf{U}^n\cdot\nabla}\mathbf{U}^n,
 \end{equation}
-which is typical for such copuled problems.
+which is typical for such coupled problems.
 
 % More details about how to deal with coupled term will be introduced in the following subsection.
 
 % \subsection{Ways to Tackle Non-linear Terms} 
 
-For the PDEs which describe the motion of fluid, there is one main difficulty. That is, the PDEs we solve involves in non-linear terms, and leads to the non-linearity in discretized equations. Hence the previously described method of solving linear equations cannot be applied directly, and we will need some other method to deal with the non-linearity.
+For the partial differential equations which describe the motion of fluid, there is one main difficulty. That is, the equations we solve involves in non-linear terms, and leads to the non-linearity in discretized equations. Hence the previously described method of solving linear equations cannot be applied directly, and we will need some other method to deal with the non-linearity.
 
 % \subsubsection{Sequential Solution}
 
@@ -286,20 +288,20 @@ In practice, this method is often combined with other method, to compensate the 
 % \subsection{Ways to Solve Large Scale Linear Equations}
 \subsection{Linear system solvers}
 
-No matter what method we use to discretize out PDEs, we have to solve the linear equations finally.
+No matter what method we use to discretize out differential equations, we have to solve the linear equations finally.
 %  And in this part, we will introduce some methods of solving linear equations, but not go into the details.
 The following are the most commonly used method in solving linear equations:
 \begin{partlist}
-\item LU Decomposition or Gauss Elimination;
-\item Jacobi iterations;
+\item LU decomposition or Gaussian elimination;
+\item Jacobian iterations;
 \item Gauss--Seidel iterations;
 \item Successive over-relaxation (SOR);
 \item Conjugate gradient (CG) method;
-\item Incomplete LU decomposition and preconditioned conjugate gradient method;
-\item Multi-grid method.
+\item Incomplete LU decomposition and preconditioned conjugate gradient method (ILUPCG, Stone method);
+\item Multi-grid method (MGM).
 \end{partlist}
 
-After discretizing PDEs, normally we will obtain a system of linear equations, then the previous described methods can be exerted to solve. Some method, such as multi-grid method, enjoys a linear time complexity to the scale of the problem.
+After discretizing the equations, normally we will obtain a system of linear equations, then the previous described methods can be exerted to solve. Some method, such as multi-grid method, enjoys a linear time complexity to the scale of the problem.
 % Here we will not go into details about all these methods, and a brief introduction of incomplete LU decomposition PCG and multi-grid method will be given here.
 
 % \subsubsection{Incomplete LU Decomposition PCG}
@@ -326,7 +328,7 @@ After discretizing PDEs, normally we will obtain a system of linear equations, t
 
 % \subsubsection{Multi-grid Method}
 
-% Multi-grid method is a very efficient method to solve the equation discretized from PDEs. Here we will briefly introduce the idea of geometry multi-grid method. The core of the geometry multi-grid method is that the signals with high frequency will decay much faster in the Gauss--Seidel iteration than signals with low frequency. Thus the Gauss--Seidel iteration has the ability of smoothing.
+% Multi-grid method is a very efficient method to solve the equation discretized from the partial differential equations. Here we will briefly introduce the idea of geometry multi-grid method. The core of the geometry multi-grid method is that the signals with high frequency will decay much faster in the Gauss--Seidel iteration than signals with low frequency. Thus the Gauss--Seidel iteration has the ability of smoothing.
 
 % Adopting this observation, the multi-grid method involves in restriction operator and prolongation operator. That is:
 % \begin{partlist}
@@ -353,14 +355,14 @@ Here the kernel $G$ should have polishing localized function. Consequently, a lo
 
 Equipped with this, we convolve the incompressible Naiver--Stokes equations with the filter kernel to obtain% \eqref{Eq:ConvKe}
 \begin{equation}\label{Eq:ConvKe}
-\frac{\partial(\overline{U}_i)}{\partial t} + \frac{\partial(\overline{U_iU_j})}{\partial x_j} = -\frac{1}{\rho} \frac{\partial\overline{p}}{\partial x_i} +\mu \frac{\partial}{\partial x_j}\left[\left(\frac{\partial\overline{U}_i}{\partial x_j}+\frac{\partial\overline{U}_j}{\partial x_j}\right)\right].
+\frac{\partial(\overline{U}_i)}{\partial t} + \frac{\partial(\overline{U_iU_j})}{\partial x_j} = -\frac{1}{\rho} \frac{\partial\overline{p}}{\partial x_i} +\nu \frac{\partial}{\partial x_j}\left[\left(\frac{\partial\overline{U}_i}{\partial x_j}+\frac{\partial\overline{U}_j}{\partial x_j}\right)\right].
 \end{equation}
 According to the linearity of the continuity equation and incompressibility, we also have
 \begin{equation}
 \frac{\partial(\overline{U}_i)}{\partial x_i} = 0.
 \end{equation}
 
-Since the second term in the left of \eqref{Eq:ConvKe} is hard to computed, we introduced the \emph{subgrid-scale Reynolds stress} (SGS Reynold stress) in \eqref{Eq:SGSRS} to handle this. The subgrid-scale Reynolds stress is defined as
+Since the second term in the left of \eqref{Eq:ConvKe} is hard to computed, we introduced the \emph{subgrid-scale Reynolds stress} (SGS Reynolds stress) in \eqref{Eq:SGSRS} to handle this. The subgrid-scale Reynolds stress is defined as
 \begin{equation}\label{Eq:SGSRS}
 \tau_{ij}^{\rmls} = -(\overline{U_iU_j}-\overline{U}_i\overline{U}_j).
 \end{equation}
@@ -382,7 +384,7 @@ using Einstein notation. This value is correlated to the energy function.
 
 Based on eddy viscosity, Smagorinsky proposed a model in 1963. The core idea of this model is that we restrain our sub-grid scale Reynolds stress in accordance to \eqref{Eq:SMAG}
 \begin{equation}\label{Eq:SMAG}
-\tau^{\rmls}_{ij} - \frac{1}{3}\tau^{\rmls}_{kk}\delta_{ij} = \nu_{\rmlt} \left(\frac{\partial\overline{u}_i}{\partial x_j} + \frac{\partial\overline{u}_j}{\partial x_i}\right) = 2\nu_{\rmlt}\overline{S}_{ij}
+\tau^{\rmls}_{ij} - \frac{1}{3}\tau^{\rmls}_{kk}\delta_{ij} = \nu_{\rmlt} \left(\frac{\partial\overline{U}_i}{\partial x_j} + \frac{\partial\overline{U}_j}{\partial x_i}\right) = 2\nu_{\rmlt}\overline{S}_{ij}
 \end{equation}
 This equation can be derived from equation production and dissipation of kinetic energy, which needs further statistical hypothesis. Here $\nu_{\rmlt}$ represents the eddy viscosity, and should be chosen as
 \begin{equation}\label{Eq:MuT}
@@ -395,7 +397,7 @@ The parameter $C_{\rmls}$ is not constant. Instead, it is selected based on the 
 
 The Smagorinsky model has one crucial problems, that is, the proper value of $C_{\rmls}$ varies among different type of fluid. To be exact, $C_{\rmls}$ should be zero in laminar flow, and should be small near the wall and should be large at where Reynolds number is large. This parameter is hard to determine, and the dynamic models proposed a convenient and efficient way to model.
 
-Except for the original filter $K$, this model introduces another filter $\widetilde{K}$, whose size $\widetilde{\Delta}$ is larger than the original size $\Delta$. This means the filter $\widetilde{K}$ is coarser than the original filter, and we are going to adopt the information we obtained after we exert this coarse filter to determine the Smagonrinsky coefficient $C_S$.
+Except for the original filter $K$, this model introduces another filter $\widetilde{K}$, whose size $\widetilde{\Delta}$ is larger than the original size $\Delta$. This means the filter $\widetilde{K}$ is coarser than the original filter, and we are going to adopt the information we obtained after we exert this coarse filter to determine the Smagorinsky coefficient $C_S$.
 
 According to the previous notations, the original velocity is $\mathbf{U}$ and the velocity after convolution with the filter $K$ is $\overline{\mathbf{U}}$. Here we use $\widetilde{\overline{\mathbf{U}}}$ to denote the velocity field obtained by exerting convolution with $\widetilde{K}$ on $\overline{\mathbf{U}}$. In this way, we define
 \begin{gather}
@@ -462,7 +464,7 @@ Here $\pbr{\phi}$ is the average value of $\phi$, which is defined as follows:
 \begin{equation}
 \pbr{\phi} \rbr{\mathbf{x}} = \frac{1}{T} \int_t^{t+T}\phi(\mathbf{x}, s)ds,
 \end{equation}
-where $T$ is an interval shorter than our interest. One may also consider the effect of chaos into consideration, and in this case $\pbr{\phi}$ represents the expectation of $\phi$ under chaotic effect of initial values. The formula in \eqref{Eq:ReyDe} is called \emph{Reynolds decomposition}.
+where $T$ is an interval shorter than our interest. To find the stable solution, we may consider $ T \srar +\infty $. One may also consider the effect of chaos into consideration, and in this case $\pbr{\phi}$ represents the expectation of $\phi$ under chaotic effect of initial values. The formula in \eqref{Eq:ReyDe} is called \emph{Reynolds decomposition}.
 
 For the next step, we are going to give the definition of Reynolds stress. Note that
 \begin{equation}\label{Eq:ReySt}
@@ -548,9 +550,11 @@ The large eddy simulation method is an approximation model. With the idea that t
 
 Reynolds-averaged simulation is the most well-used method in turbulent simulation. Equipped with the idea that people usually only care about the movement of fluid in long time average, this method divided the motion of fluid into the average motion and the fluctuation. What this method focuses on is to find a solvable PDE for the average motion. This idea brings to the definition and analysis of Reynolds stress. In general, the Reynolds-averaged simulation method does not take much time, but from the solving process we know that the details among the time step will be lost. Thus this method is far away from the accurate methods, but it points out an available way to describe the movement of fluid in acceptable time. Therefore in the real time, only the time cost of Reynolds-averaged simulation permits us to find solution for turbulent simulation. In addition, Reynolds-averaged simulation method can handle ``near steady'' cases, in which the flow is not steady at all but statistical stability may be utilized.
 
-Comparison between these models, and algorithms are listed in Table \ref{Tbl:Comp}.
+In real world engineering, it is important to find a trade off between accuracy and efficiency. Therefore, Reynolds-averaged simulation enjoys high popularity. However, as the computational capability of computer increases, large eddy simulation methods attract more and more attention. Although direct numerical simulation is usually intractable, it is the golden standard for verification. \parencite{zhaoshun_zhang_theory_2005}. Due to the defects of these models, it is still a problem to increase either accuracy or efficiency and attain a better trade off nowadays.
 
-\begin{table}
+Comparison between these models, and algorithms are summarized in Table \ref{Tbl:Comp}.
+
+\begin{table}[htbp]
 \centering
 \caption{Comparison between models and algorithms}
 \label{Tbl:Comp}
@@ -573,13 +577,13 @@ Feature & High accuracy & Multi-scale capability & Handle statistical steadiness
 
 \subsection{Experiments}
 
-We will examine two well acknowledged profile here.
+We will examine two well acknowledged profile here. The experiments are carried out originally.
 
-The first numerical experiment is about the lid-driven cavity problem \parencite{bruneau_2d_2006}. In this problem, a 2-dimensional square box having three fixed walls and a moving wall is filled with fluids. The size of the box is \SI{0.1}{\meter}, and the velocity of moving wall is set to be \SI{1}{\meter\per\second}. The kinetic viscosity $\nu$ is chosen to be $10^{-5}$\Si{\meter\squared\per\second} to acheieve the Reynolds number $ \mathrm{Re} = 10^4 $ here.
+The first numerical experiment is about the lid-driven cavity problem \parencite{bruneau_2d_2006}. In this problem, a 2-dimensional square box having three fixed walls and a moving wall is filled with fluids. The size of the box is \SI{0.1}{\meter}, and the velocity of moving wall is set to be \SI{1}{\meter\per\second}. The kinetic viscosity $\nu$ is chosen to be $10^{-5}$\Si{\meter\squared\per\second} to achieve the Reynolds number $ \mathrm{Re} = 10^4 $ here.
 
 The results at \SI{5}{s} of $ 80 \times 80 $ grid is shown in Figure \ref{Fig:Over}. For large eddy simulation, the basic Smagorinsky model is used. For Reynolds-averaged simulation, $k$-$\epsilon$ model is used.
 
-\begin{figure}
+\begin{figure}[htbp]
 {
 \centering
 {
@@ -604,7 +608,7 @@ The results at \SI{5}{s} of $ 80 \times 80 $ grid is shown in Figure \ref{Fig:Ov
 }
 {
 \footnotesize
-First row: DNS, second row: LES, last row: RAS. First column: flow stream lines; second column: magnitude of flow velocity $\mathbf{U}$; third column: logarithm of magnitude of vorticity $\bm{\omega}$. Blue means smaller quantities and red means larger. Best viewed in color.
+First row: DNS, second row: LES, last row: RAS. First column: flow stream lines; second column: magnitude of flow velocity $\mathbf{U}$; third column: logarithm of magnitude of vorticity $\bm{\omega}$. Blue means smaller quantities and red means larger. Best viewed in color and on digital display. (Digital version of this report can be found in \url{https://github.com/pppppass/TurbulentFlow/Report/Report.pdf})
 }
 \end{figure}
 
@@ -612,7 +616,7 @@ From this figure, it can be easily verified that direct numerical simulation own
 
 However, to study the difference of efficiency, we have to study the dynamics of these models and algorithms. The dynamic from \SI{1}{\second} to \SI{5}{\second} is shown in Figure \ref{Fig:Dy}.
 
-\begin{figure}
+\begin{figure}[htbp]
 {
 \centering
 {
@@ -651,7 +655,7 @@ However, to study the difference of efficiency, we have to study the dynamics of
 }
 {
 \footnotesize
-This is figures of logarithm of magnitude of vorticity $\bm{\omega}$. First row: DNS for $ 80 \times 80 $ grid; second row: LES for $ 80 \times 80 $ grid; third row: RAS for $ 80 \times 80 $ grid; fourth row: DNS for $ 160 \times 160 $ grid. Columns from left to right represent 1, 2, 3, 4, \SI{5}{\second} respectively. Blue means smaller quantities and red means larger. Best viewed in color.
+This is figures of logarithm of magnitude of vorticity $\bm{\omega}$. First row: DNS for $ 80 \times 80 $ grid; second row: LES for $ 80 \times 80 $ grid; third row: RAS for $ 80 \times 80 $ grid; fourth row: DNS for $ 160 \times 160 $ grid. Columns from left to right represent 1, 2, 3, 4, \SI{5}{\second} respectively. Blue means smaller quantities and red means larger. Best viewed in color and on digital display.
 }
 \end{figure}
 
@@ -659,19 +663,19 @@ From this figure, it can be directly observed that the direct numerical simulati
 
 We summarize the running time for different simulation methods and grid sizes. This is shown in Table \ref{Tbl:Run}.
 
-\begin{table}
+\begin{table}[htbp]
 \centering
-\caption{Comparison on running time (unit: \Si{\second})}
+\caption{Comparison on running time (\Si{\second})}
 \label{Tbl:Run}
 \begin{tabular}{|c|c|c|c|}
 \hline
 Grid size & DNS & LES & RAS \\
 \hline
-$ 20 \times 20 $ 4.62 & 5.19 & 6.16 \\
+$ 20 \times 20 $ & 4.62 & 5.19 & 6.16 \\
 \hline
-$ 40 \times 40 $ 21.84 & 25.56 & 28.20 \\
+$ 40 \times 40 $ & 21.84 & 25.56 & 28.20 \\
 \hline
-$ 80 \times 80 $ 161.82 & 174.46 & 198.67 \\
+$ 80 \times 80 $ & 161.82 & 174.46 & 198.67 \\
 \hline
 $ 160 \times 160 $ & 1380.04 & 1564.41 & 1890.42 \\
 \hline
@@ -680,11 +684,11 @@ $ 160 \times 160 $ & 1380.04 & 1564.41 & 1890.42 \\
 
 Because the number of equation gets larger for large eddy simulation and Reynolds-averaged simulation, the running time also becomes longer. However, one should not forget about the grid size: from previous argument, large eddy simulation behaves well on coarse grid, and significantly cuts down the running time. For Reynolds-averaged simulation, the system gets stable in a fast sense, and the simulated time can also be noticeably decreased.
 
-We examine the example of flow over a cylinder. The cylinder of fluids \SI{0.5}{\meter} is placed into a 2-dimentional rectangular flow pipe of width \SI{2}{\meter}. The center of cylinder section is \SI{2}{\meter} to the inlet and \SI{18}{\meter} to the outlet. The inlet provides flow of velocity $ U_0 = \SI{1}{\meter\per\second} $. To break the symmetry, we add $ U'_0 = \SI{0.1}{\meter\per\second} $ vertically. The kinetic viscosity is $ 5 \times 10^{-4} \Si{\squared\meter\per\second} $. As a result, the Reynolds number is about 3000 (considering the half upper region and ignore $U'_0$).
+We examine the example of flow over a cylinder. The cylinder of fluids \SI{0.5}{\meter} is placed into a 2-dimensional rectangular flow pipe of width \SI{2}{\meter}. The center of cylinder section is \SI{2}{\meter} to the inlet and \SI{18}{\meter} to the outlet. The inlet provides flow of velocity $ U_0 = \SI{1}{\meter\per\second} $. To break the symmetry, we add $ U'_0 = \SI{0.1}{\meter\per\second} $ vertically. The kinetic viscosity is $ 5 \times 10^{-4} \Si{\squared\meter\per\second} $. As a result, the Reynolds number is about 3000 (considering the half upper region and ignore $U'_0$).
 
 The simulation result is shown in Figure \ref{Fig:Cyl}. K\'arm\'an vortex street can be observed.
 
-\begin{figure}
+\begin{figure}[htbp]
 {
 \centering
 {
@@ -697,13 +701,13 @@ The simulation result is shown in Figure \ref{Fig:Cyl}. K\'arm\'an vortex street
 }
 {
 \footnotesize
-This is figures of magnitude of flow velocity $\mathbf{U}$. First row: DNS; second row: LES; last row: RANS. Blue means smaller quantities and red means larger. Best viewed in color.
+This is figures of magnitude of flow velocity $\mathbf{U}$. First row: DNS; second row: LES; last row: RAS. Blue means smaller quantities and red means larger. Best viewed in color and on digital display.
 }
 \end{figure}
 
 In this figure, the distinction between these three models are again magnified. The comparison the first two rows shows that the vortex street of large eddy simulation is more regular and continuous, while that of direct numerical simulation introduces some artifacts here. To be exact, the vortex street in direct numerical simulation gets broken up and the size of vortexes varies a lot. This is because the size of grids does not reach the Reynolds number, as mentioned before, and therefore direct numerical simulation cannot capture such details. For large eddy simulation, part of the vortexes are modeled and therefore accuracy and regularity can be preserved. Note that Reynolds-averaged simulation fails here, because the profile itself does not own statistical steadiness: it has periodical movement after all.
 
-These results are carried out on a computer with Intel Core i7-6500U (4 threads) and $\SI{7886}{\mebi\byte}$ RAM. The operating system is Arch Linux 4.16.13 64-bit. We deploy OpenFOAM \parencite{weller_tensorial_1998} for numerical simulation. Detailed settings include initial values, boundary conditions and numerical schemes are provided in \url{https://github.com/pppppass/TurbulentFlow}.
+These results are carried out on a computer with Intel Core i7-6500U (4 threads) and $\SI{7886}{\mebi\byte}$ RAM. The operating system is Arch Linux 4.16.13 64-bit. We deploy OpenFOAM \parencite{weller_tensorial_1998} for numerical simulation. Detailed settings include initial values, boundary conditions and numerical schemes are provided in \url{https://github.com/pppppass/TurbulentFlow/Experiments}.
 
 \section{Conclusion} \label{Sec:Con}
 
@@ -713,7 +717,7 @@ Turbulent flows are of high importance in computational mathematics and engineer
 
 \section{Acknowledgement} \label{Sec:Ack}
 
-Ten days ago, we had no acquaintance with anything in the field of computational fluid dynamics and turbulent flows simulation at all. Although we finished the literature survey and comparative analysis and experiments on our own, we express our thanks to Zexing Li, whose talk initiated us to begin such an adventure
+Ten days ago, we had no acquaintance with anything in the field of computational fluid dynamics and turbulent flows simulation at all. Although we finished the literature survey and comparative analysis and experiments on our own, we express our thanks to Zexing Li, whose talk initiated us to begin such an adventure.
 
 \section{Reference}
 
