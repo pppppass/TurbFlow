@@ -719,4 +719,323 @@ Ten days ago, we had no acquaintance with anything in the field of computational
 
 \printbibliography
 
+\section{Direct Numerical Simulation (DNS)}
+\subsection{Motivation}
+\par The direct numerical simulation (DNS) method is one of the most simplest methods in simulating turbulence. To simulate what happens in turbulence, we solve the transport equation \ref{transport} directly. \begin{equation}\label{transport}
+	\begin{aligned}
+		\frac{\partial\rho}{\partial t} + \nabla\cdot(\rho u) = 0,
+		\frac{\partial\rho u_i}{\partial t} + \frac{\partial(\rho u_ju_i)}{\partial x_j} = \frac{\partial\tau_{ij}}{\partial x_j} - \frac{\partial p}{\partial x_i} + \rho g_i,
+	\end{aligned}
+\end{equation}
+where $\tau_{ij}$ satisfies
+\begin{equation}
+	\tau_{ij} = \frac{\partial u_i}{\partial x_j} + \frac{\partial u_i}{\partial x_j} - \frac{2}{3}\mu\delta_{ij}\mathrm{div} u
+\end{equation}
+
+\par For simplicity, we assume the density $\rho$ keeps the same among all the times. This is equivalent to the incompressibility constraint. In this way, we can obtain the famous Navier-Stokes equation \eqref{ns}
+\begin{equation}\label{ns}
+	\begin{aligned}
+		\frac{\partial u}{\partial t} + u\cdot\nabla u + \frac{1}{\rho}\nabla p & = g + \mu\nabla\cdot\nabla u,\\
+		\nabla\cdot u & = 0.  
+	\end{aligned}
+\end{equation}
+\par This method is the first method developed to simulate turbulence, and is also the most accurate method among all the methods. However, since directly solving the NS equation costs too much time, this method is rarely used in practice. The next several subsections are arranged in the following way: in subsection 2.2 we will introduce three main algorithms to discretize PDEs. And then we will focus on the finite difference method. This involves in several steps, the first step what we are going to do to choose a proper schemes to discretize, and this will be introduced in subsection 2.3. Next we will talk about how to deal with non-linearity in subsection 2.4. Finally, we will discuss some method to solve linear equations in subsection 2.5.
+
+\subsection{Numerical Methods}
+\par In this section, we will introduce three main methods in solving partial differential equations numerically: the finite difference method, the finite volume method and the finite element method.
+
+\subsubsection{Finite Difference Method}
+\par To apply finite difference method, what we need do first is to discretize the geometric domain into numerical grids. Each grid usually is parallel to the coordinate axes. After discretize the geometric domain, we can use difference on the grid to represent the derivatives, such as \eqref{fd}.
+\begin{equation}\label{fd}
+	\frac{\partial u}{\partial x}\approx\frac{u(x_{i+1}) - u(x_i)}{x_{i+1} - x_i},
+\end{equation}
+where $x_{i+1}$ and $x_i$ are two grid points. In this way, we can transform the PDE into a difference equation, and then approximate the solution to the PDE by solving the difference equation. Since the finite difference functions space on a bounded set is often finite dimension, the finite difference equation can be solved by solve an equation of finite variables. This method is called finite difference method.
+\par When we try to use finite difference to represent the derivative, we always involve the errors. Hence to choose a way which is high order accuracy and can be solved efficiently is our goal. More details about how to use difference to represent the derivatives are showed in \ref{schemes}.
+
+\subsubsection{Finite Volume Method}
+\par This is another numerical method to solve PDEs. Similar to the finite difference method, in the finite volume method, the domain is firstly been divided into several control volumes, and what we are going to define is the function value on the boundary of each control volumes. There are two common ways to determine the CVs: one is to define these control volumes is a suitable grid and assign the computational node at their centers, and the other is to define the location first and then construct the control volumes. 
+\par If we write the PDEs in integral equations, then we can find the integral equations in each control volumes. If we sum up the integral equations respect to all the control volumes, we can obtain a global conservation. So the main problems in the FDM method, is to approximate the surface integrals and volume integrals of each control volumes.
+\par As for the surface integral, if the control volume is rectangles, we can divide the total integral in to integrals in each face of the control volume. That is
+\begin{equation}
+	\int_S fdS = \sum_k\int_{S_k} fdS,
+\end{equation}
+and for the integral in each face, we can simulate it by Simpson formula or other numerical ways.
+\par As for the volume integral, the most common way to use is to replace the integral with the mean value of its integrand times the volume of the control volume. If more orders of accuracy is required, then we may choose some more accurate approximation to the integral. More details will not be introduced here.
+
+\subsubsection{Finite Element Method}
+\par This method is a little bit different to the previous two methods. The main idea of the FEM is the Galekin method. That is, instead of solving the PDE directly, we write its variational form, and then find its weak solution. The domain is also divided into elements. And the discretized trial function space $U_h$ and test function space $V_h$ are the piecewise linear functions on original trial function space $U$ and test function space $V$. Then what we need to do is to find a approximation solution $u_h$ on $U_h$ satisfies
+\begin{equation}
+	\mathcal{L}(u_h, v_h) = 0\qquad \forall v_h\in V_h,
+\end{equation}
+where $\mathcal{L}(u, v) = 0$ is the variational problem. Noticing that this problem is equations of finite variables, and thus can be solved by solving equations.
+
+\subsection{Numerical Schemes for Finite Difference Method}\label{schemes}
+\par In this subsection, we will introduce several schemes in finite difference method. The schemes we choose determine the discretized equation we will solve. Thus what we need to do is to choose one proper schemes with higher ability and can be calculated faster. Here we are going to introduce two type of differential schemes, the backward Euler scheme and the Crank Nicholson scheme.
+\subsubsection{Backward Euler Scheme}
+\par This scheme is rather simple and easy to implement. Exerting this scheme on Navier-Stokes equation, we can obtain the following differential scheme
+\begin{equation}
+	\begin{aligned}
+		&\frac{u^{n+1} - u^n}{\Delta t} + (u^n\cdot\nabla)u^n + \nabla p^{n+1} = \mu\Delta u^{n+1},\\
+		&\nabla\cdot u^{n+1} = 0.
+	\end{aligned}
+\end{equation}
+\par In this scheme, as for space discretization, we can just choose central space schemes and I do not write it in the formula for simplicity. Noticing that the scheme all the terms in this formula are implicit except for the non-linearity term. Hence if we discretize the PDE in this way, we will obtain a system of linear equation. As for the techniques to solve the equation, we are going to show them in subection 2.5.
+
+\subsubsection{Crank-Nicholson Scheme}
+\par This Crank-Nicholson scheme is a more accurate scheme than Euler scheme. The whole scheme is described as follows:
+\begin{equation}
+	\begin{aligned}
+		&\frac{u^{n+1} - u^n}{\Delta t} + (u^{n+1/2}\cdot\nabla)u^{n+1/2} + \nabla p^{n+1} = \frac{\mu}{2}\Delta(u^{n+1} + u^n),\\
+		&\nabla\cdot u^{n+1} = 0.
+	\end{aligned}
+\end{equation}
+\par Here we modify the way to discretized the viscosity term in the equation. Comparing to the implicit scheme, the Crank-Nicholson scheme uses the half-explicit and half-implicit scheme. This can increase the discretized order in time dimension by 1. Besides, here we use a different way to tackle the non-linear term. The $n+1/2$ step in the non-linear term means as follows:
+\begin{equation}
+	(u^{n+1/2}\cdot\nabla)u^{n+1/2} = (u^{n+1}\cdot\nabla)u^n + (u^n\cdot\nabla)u^{n+1} - (u^n\cdot\nabla)u^n,
+\end{equation}
+which is a typical way to tackle coupled term. More details about how to deal with coupled term will be introduced in the following subsection.
+
+\subsection{Ways to Tackle Non-linear Terms} 
+\par For the PDEs which describe the motion of fluid, there is one main difficulty. That is, the PDEs we solve involves in non-linear terms, and leads to the non-linearity in discretized equations. Hence the previously described method of solving linear equations cannot be applied directly, and we will need some other method to deal with the non-linearity.
+
+\subsubsection{Sequential Solution}
+\par For the non-linearity equation, there are two types of way to solve: solving simultaneously or solving sequentially. The former type of method is too expensive to simulate fluid. 
+\par Therefore the sequential solution method is the mainstream method and we will go into some details here. The idea of the latter type is to fix some variable to obtain a system of linear equations which we can solve, then update these variable and start another such iteration. As in the sequential solving process, we always solve these linear equations with iterative methods. Thus the whole process can contains two parts:
+\begin{itemize}
+	\item Fix all the  variables' value involved in coefficients to get a system of linear equations, and then solve these linear equations. Then update the variable's value in coefficient. Such iterations are called outer iterations.
+	\item Solve the obtained linear equations with iterative methods. And such iterations are called inner iterations.
+\end{itemize}
+\par Sometimes in order to keep the stability of the outer iteration, we will use under-relaxation trick here. Suppose $\phi$ is the variable we aim to solve, and $\phi^{\mathrm{new}}$ is the variable we solve from the linear equations while fixing $\phi^n$ as $\phi$ in coefficient. Then we obtain $\phi^{n+1}$ as follows:
+\begin{equation}
+	\phi^{n+1} = \phi^n + \alpha_\phi(\phi^{\mathrm{new}} - \phi^n)
+\end{equation}
+\par And in this way we may choose $\alpha$ small in the beginning to ensure stability, and increase its value later when the stability is preserved well.
+
+\subsubsection{Newton Methods}
+\par Newton method is a direct way to solve non-linear equation. The core idea of this method is to use the tangent of $x_k$ to represent the curve. This method enjoys a second order convergence speed near the real solution, which is very satisfying. However, this method also suffers from two problems. The first problem is that if the initial point is not so close to the real solution, this method may blow up within a small number of iteration and will never find the true solution anymore. And the second problem is that this method involves in the information of the derivatives, which is sometimes hard to calculate.
+\par So in practice, this method is often combined with other method, to compensate the weakness of it.
+
+\subsection{Ways to Solve Large Scale Linear Equations}
+\par No matter what method we use to discretize out PDEs, we have to solve the linear equations finally. And in this part, we will introduce some methods of solving linear equations, but not go into the details. The following are the most commonly used method in solving linear equations:
+\begin{itemize}
+	\item LU Decomposition / Gauss Elimination
+	\item Jacobi Iteration
+	\item Gauss Seidel Iteration / SOR Iteration
+	\item Conjugate Gradient Method
+	\item Incomplete LU Decomposition PCG / Stone Method
+	\item Multi-grid Method
+\end{itemize}
+\par After discretizing the PDEs, normally we will obtain a system of linear equations, then the previous described methods can be exerted to solve. Some method, such as multi-grid method, enjoys a linear time complexity to the scale of the problem. Here we will not go into details about all these methods, and a brief introduction of incomplete LU decomposition PCG and multi-grid method will be given here.
+
+\subsubsection{Incomplete LU Decomposition PCG}
+\par To solve the linear equation 
+\begin{equation}
+	Ax = b
+\end{equation}
+we can use the famous conjugate gradient method. However, the convergence speed of conjugate gradient method depend on the conditional number of $A$. That is, the bigger the conditional number of $A$ is, the slower the conjugate gradient method converges. Thus if we can find a matrix $B$, such that the conditional number of $B^{-1}AB^{-T}$ is much smaller than $A$, then we can just solve the equation
+\begin{equation}
+	B^{-1}AB^{-T}(B^Tx) = B^{-1}b
+\end{equation}
+with conjugate gradient method. This techniques is called preconditioned conjugate gradient. However, one prerequisite of this method is that the preconditioner $B$ need to be rather simple so that $Bx = M$ and $B^Tx = M$ is easy to solve. And this leads to the incomplete LU decomposition or incomplete Cholesky factorization.
+\par Suppose we can find the LU-decomposition of $A - N$ like \eqref{ilu} where $N$ is a small sparse matrix.
+\begin{equation}\label{ilu}
+	A - N = LL^T,
+\end{equation}
+where $L$ is a lower triangular matrix. Then we can choose $L$ as the preconditioner. If $N = 0$, then we obtain the complete Cholesky decomposition, and we will have
+\begin{equation}
+	\kappa_2(L^{-1}AL^{-T}) = \kappa_2(I) = 1,
+\end{equation}
+which means that the PCG process will end after only one iteration. However, sometimes we cannot obtain an $L$ satisfies $N = 0$, but we can still obtain a preconditioner which produces the matrix with very small conditional number. For the choice of $L$, we often assume it is very sparse, such as biangular matrix. And some approximation will be done to solve \label{ilu}. More details will not be showed up here.
+
+\subsubsection{Multi-grid Method}
+\par Multi-grid method is a very efficient method to solve the equation discretized from PDEs. Here we will briefly introduce the idea of geometry multi-grid method. The core of the geometry multi-grid method is that the signals with high frequency will decay much faster in the Gauss-Seidel iteration than signals with low frequency. Thus the G-S iteration has the ability of smoothing. 
+\par Adopting this observation, the multi-grid method involves in restriction operator and prolongation operator. That is
+\begin{itemize}
+	\item Do some iteration in one scale of grids,
+	\item Coarsen the grid, and solve the error vector with respect to the previous solution,
+	\item Keep Coarsening our grid until it is accurate enough
+	\item Interpolate from the coarsen grid to obtain the solution of the refined grid, until we obtain the solution to the original equations.
+\end{itemize}
+
+
+\section{Large Eddy Simulation (LES)}
+\subsection{Motivation}
+\par Even though DNS method is of great accuracy, the time cost in simulating with that method is extremely high. Engaged with the idea that small motions of the fluid make small contributions in the entire simulations, the LES method, which only considers the large scale motions, has been proposed.
+
+\subsection{Algorithm}
+\par In order to just consider the large scale motion, this method first erases all the details of the fluid. That is, the speed field will be convoluted with a filter kernel $G(x, x')$ like \eqref{conv}
+\begin{equation}\label{conv}
+	\overline{u}_i(x) = \int G(x, x')u_i(x')dx'.
+\end{equation}
+\par Here the kernel $G$ should have polishing localized function, and is also chosen as Gaussian, or a local average filter or a filter which can cutoff all the high-frequency Fourier terms. In this equation, there is also a parameter $\Delta$ which matters. This parameter describes the scale of the filter, which means that the eddy larger whose size is larger than $\Delta$ will be considered and the one whose size is smaller than $\Delta$ will be ignored in this method. Obviously $\Delta$ should be larger than $h$, the grid size, but usually no other restriction is added on it.
+\par Equipped with this, we convolute the kinetic equation with the filter kernel to obtain \eqref{conv-ke}
+\begin{equation}\label{conv-ke}
+	\frac{\partial(\rho\overline{u}_i)}{\partial t} + \frac{\partial(\rho\overline{u_iu_j})}{\partial x_j} = -\frac{\partial\overline{p}}{\partial x_i} + \frac{\partial}{\partial x_j}\left[\mu\left(\frac{\partial\overline{u}_i}{\partial x_j}+\frac{\partial\overline{u}_j}{\partial x_j}\right)\right].
+\end{equation}
+\par According to the linearity of the continuity equation, we have
+\begin{equation}
+	\frac{\partial(\rho\overline{u}_i)}{\partial x_i} = 0.
+\end{equation}
+\par And since the second term in the left of \eqref{conv-ke} is hard to computed, we introduced the \emph{subgrid-scale Reynold stress} (SGS Reynold stress) in \eqref{ss-RS} to handle this.
+\begin{equation}\label{ss-RS}
+	\tau_{ij}^s = -\rho(\overline{u_iu_j}-\overline{u}_i\overline{u}_j).
+\end{equation}
+\par As soon as we determine the value of $\tau_{ij}^s$, we can solve \eqref{conv-ke} numerically, and this gives solutions of speed field after convolution. In these solutions, the motions of large eddies will be considered and the motion of small eddies will be ignored. And this method is the famous large eddy simulation. 
+\par If we directly solve the kinetic equation after exerting the filter, the equation will not be closed, meaning that the number of variables is more than the number of equations (variables include $\overline{u}_i$, $\overline{p}$ and $\overline{u_iu_j}$, whose number is greater than 4, the number of equations). So we need to add some restrictions on the SGS Reynold stress, and this leads to several different models which will be introduced in the following subsections. Major models include Smagorinsky models, Dynamic models and deconvolution models. Before we introduce the Smagorinsky model, the filtered rate of strain will be defined first.
+
+\subsection{The filter rate of strain}
+\par For the filtered velocity $\overline{u}$, we can define its tensor of filter rate of strain as follows:
+\begin{equation}
+	\overline{S}_{ij}^s = \frac{1}{2}\left(\frac{\partial\overline{u}_i}{\partial x_j} + \frac{\partial\overline{u}_j}{\partial x_i}\right).
+\end{equation}
+\par And the filter rate of strain $\overline{S}$ is defined by
+\begin{equation}
+	\overline{S} = \sqrt{2\overline{S}_{ij}\overline{S}_{ij}}.
+\end{equation}
+\par This value is correlated to the energy function $E$ and the details are omitted here.
+
+\subsection{Smagorinsky Models}
+\par Based on eddy viscosity, Smagorinsky proposed this model in 1963. The core idea of this model is that we restrain our SGS Reynold number as \eqref{smag}
+\begin{equation}\label{smag}
+	\tau_{ij} - \frac{1}{3}\tau_{kk}\delta_{ij} = \mu_t\left(\frac{\partial\overline{u}_i}{\partial x_j} + \frac{\partial\overline{u}_j}{\partial x_i}\right) = 2\mu_t\overline{S}_{ij}
+\end{equation}
+\par This equation can be derived from equating production and dissipation of kinetic energy. And here $\mu_t$ should be chosen as
+\begin{equation}\label{mu-t}
+	\mu_t = C_S^2\rho\Delta^2|\overline{S}|,
+\end{equation}
+where $C_S$ is the model parameter, and $\Delta$ is the size of the filter. 
+\par The parameter $C_S$ is not constant, and its value is based on the Reynold number, so it may be different in different types of fluid. In Smagorinsky model, the value of $C_S$ takes from 0.2 to 0.065. The smaller this parameter is, the less eddy viscosity in the simulation is.
+
+\subsection{Dynamic Models}
+\par The Smagorinsky model has one crucial problems, that is the proper value of $C_S$ varies among different type of fluid. $C_S$ should be zero in laminar flow, and should be small near the wall and should be large at where Reynold number is large. This parameter is hard to determine, and the dynamic models proposed a convenient and efficient way to model.
+\par Except for the original filter $G$, this model introduces another filter $\widetilde{G}$, whose size $\widetilde{\Delta}$ is larger than the original filter's size $\Delta$. This means the filter $\widetilde{G}$ is coarser than the original filter, and we are going to adopt the information we obtained after we exert this coarse filter to determine the Smagonrinsky coefficient $C_S$.
+\par According to the previous notations, the original velocity is $u$ and the velocity after convolution with the filter $G$ is $\overline{u}$. Here we use $\widetilde{\overline{u}}$ to denote the velocity field obtained by exerting convolution with $\widetilde{G}$ on $\overline{u}$. According to this, we define
+\begin{equation}
+	\begin{aligned}
+		\tau_{ij} & \equiv -\rho(\overline{u_iu_j} - \overline{u_i}\overline{u_j}),\\
+		T_{ij} & \equiv -\rho(\widetilde{\overline{u_iu_j}} - \widetilde{\overline{u}}_i\widetilde{\overline{u}}_j).\\
+		\mathcal{L}_{ij} & \equiv T_{ij} - \widetilde{\tau_{ij}} = -\rho(\widetilde{\overline{u}_i\overline{u}_j} - \widetilde{\overline{u}}_i\widetilde{\overline{u}}_j)
+	\end{aligned}
+\end{equation}
+\par Here the value $\mathcal{L}_{ij}$ is called resolved stress and can be calculated only in terms of $\overline{u}_i$.
+\par According to \eqref{smag} and \eqref{mu-t} we have 
+\begin{equation}
+	\begin{aligned}
+		\tau_{ij}' & \equiv \tau_{ij} - \frac{1}{3}\tau_{kk}\delta_{ij} = 2C_S\Delta^2\mathop{\overline{S}}\mathop{\overline{S}_{ij}},\\
+		T_{ij}' & \equiv T_{ij} - \frac{1}{3}T_{kk}\delta_{ij} = 2C_S\widetilde{\Delta}^2\mathop{\widetilde{\overline{S}}}\mathop{\widetilde{\overline{S}}_{ij}}.
+	\end{aligned}
+\end{equation}
+\par Based on the approximation
+\begin{equation}
+	\mathcal{L}_{ij} - \frac{1}{3}\mathcal{L}_{kk}\delta_{ij}\approx T_{ij}' - \widetilde{\tau_{ij}'},
+\end{equation}
+if we define
+\begin{equation}
+	M_{ij} = 2\Delta^2\widetilde{\mathop{\overline{S}}\mathop{\overline{S}_{ij}}} - 2\widetilde{\Delta}^2\mathop{\widetilde{\overline{S}}}\mathop{\widetilde{\overline{S}}_{ij}}
+\end{equation}
+then we have
+\begin{equation}
+	\mathcal{L}_{ij} - \frac{1}{3}\mathcal{L}_{kk}\delta_{ij} \approx C_S M_{ij}.
+\end{equation}
+\par Thus we can determine the value of $C_S$ by
+\begin{equation}\label{dyna}
+	C_S = \frac{M_{ij}\mathcal{L}_{ij}}{M_{kl}M_{kl}}.
+\end{equation}
+\par To remove the fluctuation in calculating $C_S$ based on the formula \eqref{dyna}, we can calculate the average value in the numerator and denominator in \eqref{dyna}. And this method has been proved to lead to good calculations.
+\par Though this model presents an available way to simulate turbulence approximately, there are still many weaknesses and difficulties in it, such as inaccuracy.
+
+\subsection{Deconvolution Models}
+\par This model is different to the previous two models. The core idea is to calculate the unfiltered velocity field according to the filtered velocity field. If we have the unfiltered velocity, then we can compute the SGS Reynold stress directly. So the problem is how can we estimate the unfiltered velocity.
+\par We first expand \eqref{conv} in a Taylor series at a point $x$ and only keep the first order term and the second order term. This will provide us a differential equation for the unfiltered velocity. Suppose the filter kernel is symmetric for $x$, then the differential equation can be write as:
+\begin{equation}
+	\overline{u}_i(x) = u_i(x) + \frac{\Delta^2}{24}\nabla^2u_i.
+\end{equation}
+\par To solve this equation, finding the approximate inversion is an appropriate idea. Such as Katapodes' method in \eqref{app-inv}.
+\begin{equation}\label{app-inv}
+	u_i(x)\approx \overline{u}_i(x) - \frac{\Delta^2}{24}\nabla^2\overline{u}_i.
+\end{equation}
+
+\section{Reynolds-Averaged Navier-Stokes (RANS) model}
+
+\subsection{Motivation}
+\par The advantages of the previously described methods, the DNS method or LES method, is that they contain many information of fluid and are much accurate to real situation. However, people usually focus on the average forces exerted on the fluid or the degree of mixing two streams of fluid. Thus most of the information they provided is redundant or useless. A century ago, Reynold proposed the Reynolds-averaged Navier-Stokes (RANS) model, aiming to simulate the average motion of fluid. 
+\par This model does not provide information which is not useful, and because of this, this model requires much less calculations than the previous two models. Therefore, this model is one of the most commonly used model in turbulent simulation.
+
+\subsection{Algorithm}
+\par Firstly for every variable, we can write it as the sum of its time-average value and a residue value as follows:
+\begin{equation}\label{reynold-de}
+	\phi(x, t) = \langle\phi\rangle(x) + \phi'(x, t)
+\end{equation}
+\par Here $\langle\phi\rangle$ is the average value of $\phi$, which is defined as follows:
+\begin{equation}
+	\langle\phi\rangle(x) = \lim_{T\to\infty}\frac{1}{T}\int_0^T\phi(x, t)dt
+\end{equation}
+\par The formula in \eqref{reynold-de} is called Reynold decomposition. Next, we will give the definition of Reynold stress. Noticing that
+\begin{equation}\label{reyno-str}
+	\langle u_i\rangle\phi = \langle(\langle u_i\rangle+u_i')(\langle\phi\rangle+\phi')\rangle = \langle u_i\rangle\langle\phi\rangle + \langle u_i'\phi'\rangle
+\end{equation}
+\par The last term in \eqref{reyno-str} is zero if and only if $\phi'$ and $u_i'$ are uncorrelated, and this situation rarely happens. Hence the \emph{turbulent scalar flux}, $\rho\langle u_i'\phi'\rangle$ need to be introduced. If we take $u_j$ in the previous equation, then we obtain the \emph{Reynold stress}, $\rho\langle u_i'u_j'\rangle$. The Reynold stress plays a similar role to SGS Reynold stress in LES method, and also it is the main part to be dealt with.
+\par Then if we take the average of the kinetic equation, we can obtain the RANS equation:
+\begin{equation}
+	\begin{aligned}
+		& \frac{\partial(\rho\langle u_i\rangle)}{\partial x_i} = 0,\\
+		& \frac{\partial(\rho\langle u_i\rangle)}{\partial t} + \frac{\partial}{\partial x_j}\left(\rho\langle u_i\rangle\langle u_j\rangle + \rho\langle u_i'u_j'\rangle\right) = -\frac{\partial\langle p\rangle}{\partial x_i} + \frac{\partial\langle\tau_{ij}\rangle}{\partial x_j}.
+	\end{aligned}
+\end{equation}
+\par Here $\langle\tau_{ij}\rangle$ are the mean viscous tensor elements:
+\begin{equation}
+	\langle\tau_{ij}\rangle = \mu\left(\frac{\partial\langle u_i\rangle}{\partial x_j} + \frac{\partial\langle u_i\rangle}{\partial x_i}\right).
+\end{equation}
+\par And for a scalar quantity, we can also write its mean as
+\begin{equation}
+	\frac{\partial(\rho\langle\phi\rangle)}{\partial t} + \frac{\partial}{\partial x_j}\left(\rho\langle u_j\rangle\langle\phi\rangle + \rho\langle u_j'\phi'\rangle\right) = \frac{\partial}{\partial x_j}\left(\Gamma\frac{\partial\langle\phi\rangle}{\partial x_j}\right).
+\end{equation}
+\par Similar to LES model, the existence of Reynold stress and turbulent scalar flux also means that the equations are not closed and impossible to solve directly. Hence we need some restrictions and correlations on them. And this give rise to the following two models: simple turbulence model and v2f model.
+
+\subsection{$k$-$\epsilon$ Model}
+\par Since the energy dissipation and the transportation of mass link to the viscosity, we can simply assume that the effect of turbulence is represented by an increased viscosity. This leads to the eddy-viscosity model:
+\begin{equation}
+	\rho\langle u_i'u_j'\rangle = \mu_t\left(\frac{\partial\langle u_i\rangle}{\partial x_j} + \frac{\partial\langle u_j\rangle}{\partial x_i}\right) - \frac{2}{3}\rho\delta_{ij}k,
+\end{equation}
+and the eddy-diffusion model is as follows:
+\begin{equation}
+	\rho\langle u_i'\phi'\rangle = \Gamma_t\frac{\partial\langle\phi\rangle}{\partial x_j},
+\end{equation}
+where $\mu_t$ and $\Gamma_t$ are the turbulent viscosity and diffusive viscosity respectively, and $k$ is the turbulent kinetic energy:
+\begin{equation}
+	k = \frac{1}{2}(\langle u_x'u_x'\rangle + \langle u_y'u_y'\rangle + \langle u_z'u_z'\rangle).
+\end{equation}
+\par According to the eddy-viscosity model and eddy-diffusion model, we can obtain the effective viscosity and effective diffusivity as follows:
+\begin{equation}
+	\begin{aligned}
+		\mu_{\mathrm{eff}} = \mu + \mu_t\\
+		\Gamma_{\mathrm{eff}} = \Gamma + \Gamma_t
+	\end{aligned}
+\end{equation}
+\par Notice that if we specify $\mu_t$ and $\Gamma_t$, then we can find the solution to $\langle u\rangle$ according to the averaged Navier-Stokes equation, with $\mu_\mathrm{eff}$ replacing $\mu$ and $\langle p\rangle + \frac{2}{3}\rho k$ replacing $p$. And so is the transportation equation for a scalar. Next we will talk about how to determine the value of $\mu_t$ (for $\Gamma_t$ the situation is similar).
+\par In the simplest model, we can just do the dimensional analysis and try to determine these parameters. $\mu_t$ can be characterized by
+\begin{equation}
+	\mu_t = C_{\mu}\rho qL,
+\end{equation}
+where $C_{\mu}$ is a dimensionless constant, $L$ is the length scale of the turbulence and $q$ here is a velocity where $q = \sqrt{2k}$. In order to determine $L$, the most popular model involves in the dissipation term $\varepsilon$. This model characterize the $L$ as 
+\begin{equation}
+	\varepsilon\approx\frac{k^{3/2}}{L}.
+\end{equation}
+\par Thus the eddy-viscosity is 
+\begin{equation}
+	\mu_t = \rho C_\mu\frac{k^2}{\varepsilon},
+\end{equation}  
+and commonly the value $C_\mu$ is chosen as $C_\mu = 0.09$. And equi pped with this, we can finish the calculation. This model is called $k$-$\varepsilon$ model.
+
+\subsection{v2f Model}
+\par There is a problem with the above model, which is that the proper condition near the wall is not known. And the changes of the kinetic quantities and the dissipation are very fast so that we cannot find a appropriate model to characterize them clearly. And the main difficulty in the region near a wall is that some quantity will be too near to zero. Such quantity is the normal velocity $v$ and the fluctuation normal velocity $v'^2$. And this model aims to deal with this, and can perform better while the cost is nearly the same with $k$-$\epsilon$ model.
+
+\section{Comparison}
+\par In this part, we will compare the previously described three models, and analyze the advantages and disadvantages of them. 
+\par For the DNS method, it is the most easy one to implement, since the idea of DNS method is to simulate the fluid directly. Hence this method is not only adaptive to turbulent simulation, but also to all types of fluid. Besides, since we do not make any approximation to the model, this model is the most accurate model in simulating turbulence. However, this model has some vital weakness, that is, the calculation of DNS is so time costly that this model cannot been used in practice.
+\par The LES method is an approximation model. With the idea that the small turbulence is insignificant to energy transportation and material exchanges, this model points out a way to eliminate the effect of small turbulence. Thus only large turbulence need to be calculated in this model. This simple movement give rise to much reduction in time complexity. However, since some approximation have been added on this model, the accuracy of the solution must have been deteriorated. However, the result of the fluid does not changed a lot, for only the non-essential details have been lost. Besides, though this model save much time from the DNS model, it is still so time costly that only simulation and examination, or some small scale simulation problems can be done with this method. Directly solving the turbulent simulation for large scale fluid still seems not possible.
+\par RANS is the most well-used method in turbulent simulation. Equipped with the idea that people usually only care about the movement of fluid in long time average, this method divided the motion of fluid into the average motion and the fluctuation. What this method focuses on is to find a solvable PDE for the average motion. This idea brings to the definition and analysis of Reynold stress. In general, the RANS method does not take much time, but from the solving process we know that the details among the time step will be lost. Thus this method is far away from the accurate methods, but it points out an available way to describe the movement of fluid in acceptable time. Therefore in the real time, only the time cost of RANS permits us to find solution for turbulent simulation. 
+
+\section{Conclusion}
+\par This report presents an introduction to turbulent simulation, including the mathematical formulation and three different models: DNS, LES and RANS. Comparison among these three models are also showed in this report. We also present numerical experiments on various cases with these three models, and show the distinctions among these models.
 \end{document}
