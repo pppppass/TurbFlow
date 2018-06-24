@@ -70,7 +70,7 @@ We summary our work in this report as follows:
 
 \section{Equations of fluid motion} \label{Sec:Eq}
 
-\subsection{Incompressible Naiver--Stokes equations}
+\subsection{Incompressible Navier--Stokes equations}
 
 We first establish equations of fluid motion \parencite{pope_turbulent_2001} \parencite{ferziger_computational_2002}, as a preparation of further discussion.
 
@@ -155,7 +155,7 @@ In all, computational methods for incompressible Newtonian fluids aim to solve
 \nabla \cdot \mathbf{U} = 0.
 \end{gathered}
 \end{equation}
-This is the \emph{incompressible Naiver--Stokes equations} (INS).
+This is the \emph{incompressible Navier--Stokes equations} (INS).
 
 Additionally, we introduce the notation of \emph{vorticity}, which is defined as
 \begin{equation}
@@ -165,13 +165,13 @@ It is clear from definition that vorticity characterizes the rate of rotation in
 \begin{equation}
 \frac{ \ud \bm{\omega} }{ \ud t } = \nu \nabla^2 \bm{\omega} + \bm{\omega} \cdot \nabla \mathbf{U},
 \end{equation}
-which is also a corollary of incompressible Naiver--Stokes equations. In turbulent flows, a great part of energy is stored in vorticity, and therefore observing distribution of vorticity is of high importance for computational turbulent flows.
+which is also a corollary of incompressible Navier--Stokes equations. In turbulent flows, a great part of energy is stored in vorticity, and therefore observing distribution of vorticity is of high importance for computational turbulent flows.
 
 Note that boundary conditions of partial differential equations matter a lot. However, it should be emphasized that the boundary condition of fluid simulation varies according to physical settings. For example, for walls, the normal velocity $\mathbf{V}$ should be set to zero on the boundary, and $p$ should have zero derivative on the normal direction. For flow patches, the velocity $\mathbf{U}$ should be fixed.
 
 \subsection{Nondimensionalization and Reynolds number}
 
-It is clear that the equation \eqref{Eq:INS} owns a great variety of invariance, including time and space invariance, orthogonality invariance and affinity invariance. However, it is not obvious that some similarity invariance is held intrinsically in the incompressible Naiver--Stokes equations.
+It is clear that the equation \eqref{Eq:INS} owns a great variety of invariance, including time and space invariance, orthogonality invariance and affinity invariance. However, it is not obvious that some similarity invariance is held intrinsically in the incompressible Navier--Stokes equations.
 
 We perform nondimensionalization first, by selecting characteristic length scale $L_0$ and velocity length scale $V_0$. By setting $ \widehat{\mathbf{x}} = \mathbf{x} / L_0 $, $ \widehat{t} = t V_0 / L_0 $, we define
 \begin{gather}
@@ -201,7 +201,7 @@ The details of this model are referred to books \parencite{forsythe_finite-diffe
 
 \subsection{Motivation}
 
-The direct numerical simulation (DNS) model is one of the most simplest models in simulating turbulent flows. To simulate what happens in turbulent flows, we solve the incompressible Naiver--Stokes equations directly \eqref{Eq:INS} \eqref{Eq:NDINS}. This model is the first model developed to simulate turbulent flows, and is also the most accurate model among all the models. However, since directly solving the incompressible Naiver--Stokes equation costs too much time, algorithms of this model is rarely used in practice. We will introduce some basic numerical models and algorithms toward this turbulent flow model.
+The direct numerical simulation (DNS) model is one of the most simplest models in simulating turbulent flows. To simulate what happens in turbulent flows, we solve the incompressible Navier--Stokes equations directly \eqref{Eq:INS} \eqref{Eq:NDINS}. This model is the first model developed to simulate turbulent flows, and is also the most accurate model among all the models. However, since directly solving the incompressible Navier--Stokes equation costs too much time, algorithms of this model is rarely used in practice. We will introduce some basic numerical models and algorithms toward this turbulent flow model.
 
 \subsection{Descretization}
 
@@ -240,7 +240,7 @@ Every time we discretize quantities, errors get involved. Hence to choose a sche
 % \subsubsection{Backward Euler Scheme}
 
 % The famous backward Euler scheme is rather simple and easy to implement. Exerting this scheme on incompressible Navier-Stokes equations, we obtain
-Schemes need to be carefully designed to numerically solve incompressible Naiver--Stokes equations. One scheme of high popularity is
+Schemes need to be carefully designed to numerically solve incompressible Navier--Stokes equations. One scheme of high popularity is
 \begin{equation}
 \begin{gathered}
 \frac{\mathbf{U}^{n+1} - \mathbf{U}^n}{\Delta t} + (\mathbf{U}^n\cdot\nabla)\mathbf{U}^n = - \frac{1}{\rho} \nabla p^{n+1} + \nu \nabla^2 \mathbf{U}^{n+1}, \\
@@ -370,7 +370,7 @@ In order to simply consider the large scale motion, this model first erases all 
 
 Here the kernel $G$ should have smoothing property. A local average filter, a band-width filter or a Gaussian kernel may apply. In this equation, there is also a parameter $\Delta$ which matters. This parameter describes the scale of the filter, which means that eddies which are larger than $\Delta$ will be calculated and the ones smaller than $\Delta$ will be ignored or approximated. Obviously $\Delta$ should be no larger than the grid size, but usually no other restriction is forced.
 
-Equipped with this, we convolve the incompressible Naiver--Stokes equations with the filter kernel to obtain% \eqref{Eq:ConvKe}
+Equipped with this, we convolve the incompressible Navier--Stokes equations with the filter kernel to obtain% \eqref{Eq:ConvKe}
 \begin{equation}\label{Eq:ConvKe}
 \frac{\partial(\overline{U}_i)}{\partial t} + \frac{\partial(\overline{U_iU_j})}{\partial x_j} = -\frac{1}{\rho} \frac{\partial\overline{p}}{\partial x_i} +\nu \frac{\partial}{\partial x_j}\left[\left(\frac{\partial\overline{U}_i}{\partial x_j}+\frac{\partial\overline{U}_j}{\partial x_j}\right)\right].
 \end{equation}
@@ -490,7 +490,7 @@ For the next step, we are going to give the definition of Reynolds stress. Note 
 \end{equation}
 The last term in \eqref{Eq:ReySt} is zero if and only if $\phi'$ and $U_i'$ are uncorrelated, and this situation rarely happens. Hence the \emph{turbulent scalar flux} $\rho\langle U_i'\phi'\rangle$ needs to be introduced. If we plug $U_j$ into $\phi$, we obtain the \emph{Reynolds stress} $\langle U_i'U_j'\rangle$. The Reynolds stress plays a similar role to sub-grids scale Reynolds stress in large eddy simulation model, although historically Reynolds stress was introduced earlier. Reynolds stress is the main part to be dealt with.
 
-If we take the Reynolds average of incompressible Naiver--Stokes equation, we can obtain the Reynolds-averaged Naiver--Stokes equation:
+If we take the Reynolds average of incompressible Navier--Stokes equation, we can obtain the Reynolds-averaged Navier--Stokes equation:
 \begin{gather}
 \frac{\partial\langle U_i\rangle}{\partial t} + \frac{\partial}{\partial x_j}\left(\langle U_i\rangle\langle U_j\rangle + \langle U_i'U_j'\rangle\right) = - \frac{1}{\rho} \frac{\partial\langle p\rangle}{\partial x_i} + \frac{\partial\langle\tau_{ij}\rangle}{\partial x_j}, \\
 \frac{\partial\langle U_i\rangle}{\partial x_i} = 0,
@@ -609,21 +609,21 @@ The results at \SI{5}{s} of $ 80 \times 80 $ grid are shown in Figure \ref{Fig:O
 {
 \centering
 {
-\includegraphics[width=3cm]{Results/Figure01b.pdf}
-\includegraphics[width=3cm]{Results/Figure01a.pdf}
-\includegraphics[width=3cm]{Results/Figure02e.pdf}
+\includegraphics[width=3cm]{Results/Figure01b.png}
+\includegraphics[width=3cm]{Results/Figure01a.png}
+\includegraphics[width=3cm]{Results/Figure02e.png}
 }
 
 {
-\includegraphics[width=3cm]{Results/Figure01e.pdf}
-\includegraphics[width=3cm]{Results/Figure01d.pdf}
-\includegraphics[width=3cm]{Results/Figure02j.pdf}
+\includegraphics[width=3cm]{Results/Figure01e.png}
+\includegraphics[width=3cm]{Results/Figure01d.png}
+\includegraphics[width=3cm]{Results/Figure02j.png}
 }
 
 {
-\includegraphics[width=3cm]{Results/Figure01h.pdf}
-\includegraphics[width=3cm]{Results/Figure01g.pdf}
-\includegraphics[width=3cm]{Results/Figure02o.pdf}
+\includegraphics[width=3cm]{Results/Figure01h.png}
+\includegraphics[width=3cm]{Results/Figure01g.png}
+\includegraphics[width=3cm]{Results/Figure02o.png}
 }
 \caption{Simulation results at \SI{5}{s} for $ 80 \times 80 $ grid}
 \label{Fig:Over}
@@ -642,35 +642,35 @@ However, to study the difference of efficiency, we have to study the dynamics of
 {
 \centering
 {
-\includegraphics[width=3cm]{Results/Figure02a.pdf}
-\includegraphics[width=3cm]{Results/Figure02b.pdf}
-\includegraphics[width=3cm]{Results/Figure02c.pdf}
-\includegraphics[width=3cm]{Results/Figure02d.pdf}
-\includegraphics[width=3cm]{Results/Figure02e.pdf}
+\includegraphics[width=3cm]{Results/Figure02a.png}
+\includegraphics[width=3cm]{Results/Figure02b.png}
+\includegraphics[width=3cm]{Results/Figure02c.png}
+\includegraphics[width=3cm]{Results/Figure02d.png}
+\includegraphics[width=3cm]{Results/Figure02e.png}
 }
 
 {
-\includegraphics[width=3cm]{Results/Figure02f.pdf}
-\includegraphics[width=3cm]{Results/Figure02g.pdf}
-\includegraphics[width=3cm]{Results/Figure02h.pdf}
-\includegraphics[width=3cm]{Results/Figure02i.pdf}
-\includegraphics[width=3cm]{Results/Figure02j.pdf}
+\includegraphics[width=3cm]{Results/Figure02f.png}
+\includegraphics[width=3cm]{Results/Figure02g.png}
+\includegraphics[width=3cm]{Results/Figure02h.png}
+\includegraphics[width=3cm]{Results/Figure02i.png}
+\includegraphics[width=3cm]{Results/Figure02j.png}
 }
 
 {
-\includegraphics[width=3cm]{Results/Figure02k.pdf}
-\includegraphics[width=3cm]{Results/Figure02l.pdf}
-\includegraphics[width=3cm]{Results/Figure02m.pdf}
-\includegraphics[width=3cm]{Results/Figure02n.pdf}
-\includegraphics[width=3cm]{Results/Figure02o.pdf}
+\includegraphics[width=3cm]{Results/Figure02k.png}
+\includegraphics[width=3cm]{Results/Figure02l.png}
+\includegraphics[width=3cm]{Results/Figure02m.png}
+\includegraphics[width=3cm]{Results/Figure02n.png}
+\includegraphics[width=3cm]{Results/Figure02o.png}
 }
 
 {
-\includegraphics[width=3cm]{Results/Figure02p.pdf}
-\includegraphics[width=3cm]{Results/Figure02q.pdf}
-\includegraphics[width=3cm]{Results/Figure02r.pdf}
-\includegraphics[width=3cm]{Results/Figure02s.pdf}
-\includegraphics[width=3cm]{Results/Figure02t.pdf}
+\includegraphics[width=3cm]{Results/Figure02p.png}
+\includegraphics[width=3cm]{Results/Figure02q.png}
+\includegraphics[width=3cm]{Results/Figure02r.png}
+\includegraphics[width=3cm]{Results/Figure02s.png}
+\includegraphics[width=3cm]{Results/Figure02t.png}
 }
 \caption{Simulation dynamics from \SI{1}{s} to \SI{5}{s}}
 \label{Fig:Dy}
@@ -714,9 +714,9 @@ The simulation result is shown in Figure \ref{Fig:Cyl}. K\'arm\'an vortex street
 {
 \centering
 {
-\includegraphics[width=15cm]{Results/Figure03a.pdf}
-\includegraphics[width=15cm]{Results/Figure03b.pdf}
-\includegraphics[width=15cm]{Results/Figure03c.pdf}
+\includegraphics[width=15cm]{Results/Figure03a.png}
+\includegraphics[width=15cm]{Results/Figure03b.png}
+\includegraphics[width=15cm]{Results/Figure03c.png}
 }
 \caption{Simulations result of flows over a cylinder at $\SI{20}{\second}$}
 \label{Fig:Cyl}
