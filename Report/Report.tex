@@ -448,18 +448,18 @@ To remove the fluctuation in calculating $C_{\rmls}$ based on the formula \eqref
 
 Though this model presents an tractable way to simulate turbulent flows approximately, there are still many weakness and difficulties in it, such as low accuracy.
 
-\subsection{Deconvolution Models}
+\subsection{Deconvolution model}
 
 This model is different to the previous two models. The core idea is to calculate the unfiltered velocity field according to the filtered velocity field, instead of directly ignoring the small eddies. If we have the unfiltered velocity, then we can compute the sub-grid scale Reynolds stress directly. In this way, the problem lies in estimation of unfiltered velocity.
 
 We first expand \eqref{Eq:Conv} in a Taylor series at a point $\mathbf{x}$ to second order. This will provide us a differential equation for the unfiltered velocity. Suppose the filter kernel is symmetric for $\mathbf{x}$, then the differential equation can be written as:
 \begin{equation}
-\overline{u}_i \approx u_i + \frac{\Delta^2}{24}\nabla^2u_i.
+\overline{U}_i \approx U_i + \frac{\Delta^2}{24}\nabla^2U_i.
 \end{equation}
 
 To solve this equation, finding the approximate inversion is an appropriate idea. We may use Katapodes' estimation, which is
 \begin{equation}
-u_i \approx \overline{u}_i - \frac{\Delta^2}{24}\nabla^2\overline{u}_i.
+U_i \approx \overline{U}_i - \frac{\Delta^2}{24}\nabla^2\overline{U}_i.
 \end{equation}
 
 \section{Models of Reynolds-averaged simulation} \label{Sec:RAS}
